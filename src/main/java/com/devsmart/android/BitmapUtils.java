@@ -38,4 +38,13 @@ public class BitmapUtils {
         return destBmp;
     }
 
+    public static BitmapFactory.Options createBitmapScaledOptions(int targetResolution, int actualResolution) {
+        double scaleFactor = Math.log((double)actualResolution / (double)targetResolution) / Math.log(2);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = Math.max(1, (int)Math.floor(scaleFactor));
+
+        return options;
+    }
+
 }

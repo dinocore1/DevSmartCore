@@ -3,6 +3,7 @@ package com.devsmart.android.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.DialogFragment;
@@ -23,6 +24,11 @@ import java.io.File;
 
 public class ChooseFileDialogFragment extends DialogFragment {
 
+    public interface ChooseFileCallback {
+        void onCancel();
+        void onFileSelected(File file);
+    }
+
     private static final String ARG_ROOT = "root";
 
 
@@ -35,16 +41,21 @@ public class ChooseFileDialogFragment extends DialogFragment {
         return retval;
     }
 
+    private boolean mCanGoBelow = false;
+    private File mRootDir;
     private File mCurrentDir;
     private FrameLayout mFrameLayout;
     private ListView mListView;
+    private File mSelectedFile;
+    private ChooseFileCallback mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        mCurrentDir = new File(args.getString(ARG_ROOT));
+        mRootDir = new File(args.getString(ARG_ROOT));
+        mCurrentDir = mRootDir;
 
     }
 
@@ -66,20 +77,38 @@ public class ChooseFileDialogFragment extends DialogFragment {
 
     class DirListAdapter extends BaseAdapter {
 
-        private final File[] mFiles;
+        private final File mDir;
+        private File[] mFiles;
+
 
         public DirListAdapter(File file) {
+            mDir = file;
             mFiles = file.listFiles();
+            if(mFiles == null) {
+                mFiles = new File[0];
+            }
+        }
+
+        private boolean hasBack() {
+            return !(mDir.equals(mRootDir) && !mCanGoBelow);
         }
 
         @Override
         public int getCount() {
-            return mFiles.length + 1;
+            if(hasBack()){
+                return mFiles.length + 1;
+            } else {
+                return mFiles.length;
+            }
         }
 
         @Override
         public Object getItem(int i) {
-            return mFiles[i-1];
+            if(hasBack()){
+                return mFiles[i - 1];
+            } else {
+                return mFiles[i];
+            }
         }
 
         @Override
@@ -97,11 +126,17 @@ public class ChooseFileDialogFragment extends DialogFragment {
 
             TextView filenameText = (TextView)retval.findViewById(R.id.filename);
 
-            if(i == 0){
-                filenameText.setText("..");
-                retval.setTag(new File(".."));
+            if(hasBack()) {
+                if (i == 0) {
+                    filenameText.setText("..");
+                    retval.setTag(new File(".."));
+                } else {
+                    final File file = mFiles[i - 1];
+                    retval.setTag(file);
+                    filenameText.setText(file.getName());
+                }
             } else {
-                final File file = mFiles[i-1];
+                final File file = mFiles[i];
                 retval.setTag(file);
                 filenameText.setText(file.getName());
             }
@@ -111,17 +146,20 @@ public class ChooseFileDialogFragment extends DialogFragment {
         }
     }
 
+
     private AdapterView.OnItemClickListener mOnItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            final File file = (File) view.getTag();
+            mSelectedFile = null;
 
+            final File file = (File) view.getTag();
             if("..".equals(file.getName())){
                 popDir();
             } else if(file.isDirectory()){
                 pushDir(file.getName());
             } else {
                 adapterView.setSelection(i);
+                mSelectedFile = file;
             }
 
         }
@@ -217,8 +255,21 @@ public class ChooseFileDialogFragment extends DialogFragment {
         AlertDialog retval = new AlertDialog.Builder(getActivity())
                 .setView(createContentView())
                 .setTitle("Choose File")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Select", null)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (mCallback != null) {
+                            mCallback.onCancel();
+                        }
+                        dismiss();
+                    }
+                })
+                .setPositiveButton("Select", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        onSelectedClicked();
+                    }
+                })
                 .create();
 
 
@@ -226,5 +277,18 @@ public class ChooseFileDialogFragment extends DialogFragment {
         //retval.setTitle("Choose File");
         retval.show();
         return retval;
+    }
+
+    public void setCallback(ChooseFileCallback cb) {
+        mCallback = cb;
+    }
+
+    void onSelectedClicked() {
+        if(mSelectedFile != null) {
+            if(mCallback != null){
+                mCallback.onFileSelected(mSelectedFile);
+            }
+            dismiss();
+        }
     }
 }

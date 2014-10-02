@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.devsmart.android.R;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class ChooseFileDialogFragment extends DialogFragment {
 
@@ -75,6 +77,21 @@ public class ChooseFileDialogFragment extends DialogFragment {
         return mFrameLayout;
     }
 
+    class FilenameComparator implements Comparator<File> {
+
+        @Override
+        public int compare(File file, File file2) {
+            int a = file.isDirectory() ? 0 : 1;
+            int b = file2.isDirectory() ? 0 : 1;
+
+            if(a == b){
+                return file.getName().compareTo(file2.getName());
+            } else {
+                return a - b;
+            }
+        }
+    }
+
     class DirListAdapter extends BaseAdapter {
 
         private final File mDir;
@@ -87,6 +104,8 @@ public class ChooseFileDialogFragment extends DialogFragment {
             if(mFiles == null) {
                 mFiles = new File[0];
             }
+
+            Arrays.sort(mFiles, new FilenameComparator());
         }
 
         private boolean hasBack() {
@@ -250,8 +269,6 @@ public class ChooseFileDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //Dialog retval = super.onCreateDialog(savedInstanceState);
-
         AlertDialog retval = new AlertDialog.Builder(getActivity())
                 .setView(createContentView())
                 .setTitle("Choose File")
@@ -272,9 +289,6 @@ public class ChooseFileDialogFragment extends DialogFragment {
                 })
                 .create();
 
-
-
-        //retval.setTitle("Choose File");
         retval.show();
         return retval;
     }

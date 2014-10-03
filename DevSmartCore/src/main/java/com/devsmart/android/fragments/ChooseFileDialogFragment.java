@@ -140,7 +140,7 @@ public class ChooseFileDialogFragment extends DialogFragment {
 
             View retval = view;
             if(retval == null){
-                retval = LayoutInflater.from(getActivity()).inflate(R.layout.filelistitem, viewGroup, false);
+                retval = LayoutInflater.from(getActivity()).inflate(R.layout.devsmart_filelistitem, viewGroup, false);
             }
 
             TextView filenameText = (TextView)retval.findViewById(R.id.filename);
@@ -153,11 +153,13 @@ public class ChooseFileDialogFragment extends DialogFragment {
                     final File file = mFiles[i - 1];
                     retval.setTag(file);
                     filenameText.setText(file.getName());
+
                 }
             } else {
                 final File file = mFiles[i];
                 retval.setTag(file);
                 filenameText.setText(file.getName());
+
             }
 
 
@@ -170,14 +172,12 @@ public class ChooseFileDialogFragment extends DialogFragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             mSelectedFile = null;
-
             final File file = (File) view.getTag();
             if("..".equals(file.getName())){
                 popDir();
             } else if(file.isDirectory()){
                 pushDir(file.getName());
             } else {
-                adapterView.setSelection(i);
                 mSelectedFile = file;
             }
 

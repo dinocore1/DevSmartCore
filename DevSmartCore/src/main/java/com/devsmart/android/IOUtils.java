@@ -52,7 +52,7 @@ public class IOUtils {
     public static void deleteTree(File dir) {
         for(File f : dir.listFiles()){
             if(f.isDirectory()){
-                deleteTree(dir);
+                deleteTree(f);
             } else {
                 f.delete();
             }

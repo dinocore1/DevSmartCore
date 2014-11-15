@@ -6,11 +6,13 @@
     android:layout_height="match_parent">
 
 
-    <com.devsmart.android.views.CameraPreviewView
+    <FrameLayout
+        android:id="@+id/camera"
         android:layout_width="200dip"
         android:layout_height="200dip"
         android:layout_margin="50dip"
         />
+
 
 
 

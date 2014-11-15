@@ -1,18 +1,13 @@
 package com.devsmart.android.fragments;
 
-import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
-import android.widget.FrameLayout;
 
 import com.devsmart.android.CameraWrapper;
 import com.devsmart.android.views.CameraPreviewView;
@@ -21,7 +16,7 @@ import java.io.IOException;
 
 public class CameraPreviewFragment extends Fragment implements SurfaceHolder.Callback {
 
-    private static final String ARG_CAMID = "camid";
+    public static final String ARG_CAMID = "camid";
 
     private CameraWrapper mCamera;
     private Camera.Size mPreviewSize;
@@ -33,6 +28,10 @@ public class CameraPreviewFragment extends Fragment implements SurfaceHolder.Cal
 
 
     public static CameraPreviewFragment createInstance(int cameraId) {
+        return createInstance(cameraId, 1.0f, 0, 0);
+    }
+
+    public static CameraPreviewFragment createInstance(int cameraId, float zoom, int panx, int pany) {
         Bundle args = new Bundle();
         args.putInt(ARG_CAMID, cameraId);
 
@@ -53,14 +52,14 @@ public class CameraPreviewFragment extends Fragment implements SurfaceHolder.Cal
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFrame = new CameraPreviewView(getActivity());
-        mFrame.setZoomPan(0.5f, 0, 0);
 
+        mFrame.setZoomPan(5f, 0, 0);
         mFrame.mSurfaceView.getHolder().addCallback(this);
         return mFrame;
     }
 
     public void setPanZoom(float zoom, float x, float y) {
-
+        mFrame.setZoomPan(zoom, x, y);
     }
 
     @Override

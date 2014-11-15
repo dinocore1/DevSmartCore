@@ -1,5 +1,6 @@
 package com.devsmart.android.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -48,12 +49,8 @@ public class DemoActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
 
-                CameraPreviewFragment frag = CameraPreviewFragment.createInstance(0);
-
-                FragmentTransaction tr = getSupportFragmentManager().beginTransaction();
-                tr.replace(R.id.content, frag);
-                tr.addToBackStack(null);
-                tr.commit();
+                Intent intent = new Intent(DemoActivity.this, CameraTestActivity.class);
+                startActivity(intent);
             }
         });
     }

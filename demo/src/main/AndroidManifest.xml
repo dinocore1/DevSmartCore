@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.devsmart.android.demo">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:icon="@drawable/ic_launcher"
         android:label="DevSmart Demo">

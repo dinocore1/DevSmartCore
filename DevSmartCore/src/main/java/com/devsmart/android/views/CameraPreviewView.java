@@ -22,6 +22,7 @@ public class CameraPreviewView extends ViewGroup {
     private RectF src = new RectF();
     private RectF dest = new RectF();
     private Matrix matrix = new Matrix();
+    private boolean centerCrop = true;
 
 
     public CameraPreviewView(Context context) {
@@ -74,13 +75,33 @@ public class CameraPreviewView extends ViewGroup {
         src.set(0, 0, mCameraWidth, mCameraHeight);
         dest.set(l, t, r, b);
 
-        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER);
-        matrix.postScale(mZoom, mZoom, dest.centerX(), dest.centerY());
-        matrix.postTranslate(mPanX, mPanY);
+        if(centerCrop){
 
-        matrix.mapRect(src);
+            matrix.setScale(mZoom, mZoom, mPanX, mPanY);
+            matrix.mapRect(src);
 
-        mSurfaceView.layout((int)src.left, (int)src.top, (int)src.right, (int)src.bottom);
+            int newWidth, newHeight;
+            if(getMeasuredWidth() / (float)getMeasuredHeight() > 1){
+                newWidth = getMeasuredWidth();
+                newHeight = (int) (newWidth * mCameraHeight / (float)mCameraWidth);
+            } else {
+                newHeight = getMeasuredHeight();
+                newWidth = (int) (newHeight * mCameraWidth / (float)mCameraHeight);
+            }
+
+            int dx = (int) ((newWidth - dest.width()) / 2);
+            int dy = (int) ((newHeight - dest.height()) / 2);
+
+            mSurfaceView.layout(l - dx, t - dy, r + dx, b + dy);
+
+        } else {
+            matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER);
+            matrix.preScale(mZoom, mZoom, mPanX, mPanY);
+            matrix.mapRect(src);
+
+            mSurfaceView.layout((int) src.left, (int) src.top, (int) src.right, (int) src.bottom);
+        }
+
     }
 
 }

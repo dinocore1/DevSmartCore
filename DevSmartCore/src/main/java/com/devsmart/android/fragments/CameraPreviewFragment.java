@@ -53,7 +53,7 @@ public class CameraPreviewFragment extends Fragment implements SurfaceHolder.Cal
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFrame = new CameraPreviewView(getActivity());
-        mFrame.setZoomPan(1.6f, 0, 0);
+        mFrame.setZoomPan(0.5f, 0, 0);
 
         mFrame.mSurfaceView.getHolder().addCallback(this);
         return mFrame;

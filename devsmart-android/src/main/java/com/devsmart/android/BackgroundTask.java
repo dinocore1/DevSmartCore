@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.devsmart.ThreadUtils;
+
 public abstract class BackgroundTask implements Runnable {
 
 
@@ -17,7 +19,7 @@ public abstract class BackgroundTask implements Runnable {
 
 	public static Future<?> runBackgroundTask(BackgroundTask task){
 		task.mMainThreadHandler = new Handler(Looper.getMainLooper());
-		return ThreadUtils.IOThreadPool.submit(task);
+		return ThreadUtils.IOThreads.submit(task);
 	}
 
 	private Handler mMainThreadHandler;

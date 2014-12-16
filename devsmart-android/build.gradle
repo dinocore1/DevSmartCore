@@ -37,6 +37,7 @@ android {
 
 dependencies {
     compile project(':devsmart-core')
+    compile 'com.android.support:support-v4:21.0.+'
     compile 'org.slf4j:slf4j-api:1.7.8'
 
 }

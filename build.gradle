@@ -1,11 +1,9 @@
-apply plugin: 'com.android.library'
+allprojects {
 
-android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    group = 'com.dev-smart'
+    version = '0.1.0'
 
-    defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 20
+    repositories {
+        mavenCentral()
     }
 }

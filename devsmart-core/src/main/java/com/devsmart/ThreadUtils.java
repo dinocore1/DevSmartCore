@@ -3,6 +3,7 @@ package com.devsmart;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 
 public class ThreadUtils {
@@ -32,5 +33,6 @@ public class ThreadUtils {
     };
 
     public static final ExecutorService CPUThreads = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), CPUThreadPoolFactory);
-    public static final ExecutorService IOThreads = Executors.newCachedThreadPool(IOThreadPoolFactory);
+    public static final ScheduledExecutorService IOThreads = Executors.newScheduledThreadPool(1, IOThreadPoolFactory);
+
 }

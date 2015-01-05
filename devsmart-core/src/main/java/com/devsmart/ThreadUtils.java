@@ -33,6 +33,6 @@ public class ThreadUtils {
     };
 
     public static final ExecutorService CPUThreads = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), CPUThreadPoolFactory);
-    public static final ScheduledExecutorService IOThreads = Executors.newScheduledThreadPool(1, IOThreadPoolFactory);
+    public static final ExecutorService IOThreads = Executors.newCachedThreadPool(IOThreadPoolFactory);
 
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
  */
 public class TaskQueue {
 
-    Logger logger = LoggerFactory.getLogger(TaskQueue.class);
+    static Logger logger = LoggerFactory.getLogger(TaskQueue.class);
 
     class Task implements Runnable {
 

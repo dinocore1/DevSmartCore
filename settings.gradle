@@ -1,2 +1,3 @@
 include ':devsmart-core'
 include ':devsmart-android'
+include ':devsmart-swing'

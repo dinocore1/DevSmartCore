@@ -7,10 +7,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.devsmart.TaskQueue;
 import com.devsmart.ThreadUtils;
 
 public abstract class BackgroundTask implements Runnable {
 
+	public static void runBackgroundTask(BackgroundTask task, TaskQueue queue) {
+		task.mMainThreadHandler = new Handler(Looper.getMainLooper());
+		queue.execute(task);
+	}
 
     public static Future<?> runBackgroundTask(BackgroundTask task, ExecutorService service){
 		task.mMainThreadHandler = new Handler(Looper.getMainLooper());

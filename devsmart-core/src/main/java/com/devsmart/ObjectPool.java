@@ -1,25 +1,30 @@
 package com.devsmart;
 
-public class ObjectPool<T extends ObjectPool.Pooled> {
-    private PooledCreator mCreator;
-    private Pooled[] mObjects;
+public class ObjectPool<T> {
+
+    public interface PooledCreator<Q> {
+        Q create();
+    }
+
+    private PooledCreator<T> mCreator;
+    private Object[] mObjects;
     private int mFreeIndex;
 
-    public ObjectPool(int poolSize, PooledCreator creator) {
+    public ObjectPool(int poolSize, PooledCreator<T> creator) {
         mCreator = creator;
-        mObjects = new Pooled[poolSize];
+        mObjects = new Object[poolSize];
         mFreeIndex = -1;
     }
 
     public synchronized T borrow() {
         if (mFreeIndex < 0) {
-            return (T) mCreator.create();
+            return mCreator.create();
+        } else {
+            return (T) mObjects[mFreeIndex--];
         }
-
-        return (T) mObjects[mFreeIndex--];
     }
 
-    public synchronized void release(Pooled obj) {
+    public synchronized void release(T obj) {
         if (obj == null) {
             return;
         }
@@ -35,7 +40,7 @@ public class ObjectPool<T extends ObjectPool.Pooled> {
         mObjects[++mFreeIndex] = obj;
     }
 
-    public synchronized boolean isInFreeList(Pooled obj) {
+    public synchronized boolean isInFreeList(T obj) {
         for(int i=0;i<mFreeIndex+1;i++){
             if(obj == mObjects[i]) {
                 return true;
@@ -43,12 +48,5 @@ public class ObjectPool<T extends ObjectPool.Pooled> {
         }
 
         return false;
-    }
-
-    public interface Pooled {
-    }
-
-    public interface PooledCreator {
-        Pooled create();
     }
 }

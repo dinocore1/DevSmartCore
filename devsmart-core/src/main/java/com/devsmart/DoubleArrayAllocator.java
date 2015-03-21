@@ -1,72 +1,93 @@
 package com.devsmart;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DoubleArrayAllocator {
 
+    private final long mMaxSize;
+    private long mSize = 0;
+    private ArrayList<double[]> mPool = new ArrayList<double[]>();
 
-    private static DoubleArrayAllocator mSingleton;
-    public synchronized static DoubleArrayAllocator get() {
-        if(mSingleton == null){
-            mSingleton = createDefault();
-        }
-        return mSingleton;
+    public DoubleArrayAllocator(long maxSize) {
+        mMaxSize = maxSize;
     }
-
-    public static DoubleArrayAllocator createDefault() {
-        DoubleArrayAllocator retval = new DoubleArrayAllocator();
-        for(int i=0;i<13;i++){
-            retval.ensureBinSize(i, 10);
-        }
-        return retval;
-    }
-
-    DoubleArrayPool[] bins = new DoubleArrayPool[13];
 
     /**
-     * ensures at least a pool of size maximumCapacity for each
-     * allocation bin.
-     * @param bin
-     * @param maxCapacity
+     * Returns an array to use that is at least {@code size} length.
+     * @param size
+     * @return
      */
-    public synchronized void ensureBinSize(int bin, int maxCapacity) {
-        int binArraySize = 1 << bin;
-        if(bins[bin] == null || bins[bin].mMaxSize < maxCapacity) {
-            bins[bin] = new DoubleArrayPool(maxCapacity, binArraySize);
-        }
-    }
-
     public synchronized double[] alloc(int size) {
-        int bin = getBin2(size);
-        DoubleArrayPool pool = bins[bin];
-        double[] retval = pool.borrow();
-        return retval;
-    }
-
-    public synchronized void free(double[] o) {
-        if(o == null) {
-            return;
-        }
-        int bin = getBin2(o.length);
-        DoubleArrayPool pool = bins[bin];
-        pool.release(o);
-    }
-
-    static int getBin2(int size) {
-        int retval = 1;
-        size--;
-        while((size >>= 1) > 0) {
-            retval++;
+        double[] retval;
+        int index = binarySearch(mPool, size);
+        if(index >= 0) {
+            retval = mPool.remove(index);
+            mSize -= retval.length;
+        } else {
+            index = -index - 1;
+            if (index < mPool.size()) {
+                retval = mPool.remove(index);
+                mSize -= retval.length;
+            } else {
+                retval = new double[size];
+            }
         }
         return retval;
     }
 
-    static int getBin(int size) {
-        size--;
-        size |= size >> 1;
-        size |= size >> 2;
-        size |= size >> 4;
-        size |= size >> 8;
-        size |= size >> 16;
-        size++;
-        return size;
+    public synchronized void free(double[] obj) {
+        if(mSize + obj.length < mMaxSize) {
+            int index = binarySearch(mPool, obj.length);
+            if(index >= 0 && contains(mPool, index, obj)) {
+                //be sure to not add the same obj twice
+                return;
+            }
+            index = index < 0 ? -index-1 : index;
+            mPool.add(index, obj);
+            mSize += obj.length;
+        }
+    }
+
+    private boolean contains(final List<double[]> list, int floor, double[] obj) {
+        final int top = list.size();
+        double[] a;
+        for(int i=floor;i<top && (a = list.get(i)).length == obj.length;i++) {
+            if(a == obj) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * deferred detection binary search algorithm. This version of binary search has
+     * the benefit that it will always return the smallest index of duplicate keys.
+     * this is useful later when we search for the same instance of arrays.
+     * @param list
+     * @param key
+     * @return
+     */
+    private static int binarySearch(final List<double[]> list, final int key) {
+        double[] obj = null;
+        int lo = 0;
+        int hi = list.size();
+
+        while(lo < hi) {
+            int mid = lo + (hi-lo)/2;
+
+            obj = list.get(mid);
+            if(obj.length < key) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+
+        if(lo == hi && lo < list.size() && list.get(lo).length == key) {
+            return lo;
+        } else {
+            return -(lo+1);
+        }
     }
 }

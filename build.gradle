@@ -1,9 +1,15 @@
 allprojects {
 
     group = 'com.dev-smart'
-    version = '0.1.4'
+    version = '0.1.6'
+    description = 'Collection of Java utilities'
 
     repositories {
-        mavenCentral()
+        jcenter()
+        mavenCentral();
+        mavenLocal()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
     }
 }

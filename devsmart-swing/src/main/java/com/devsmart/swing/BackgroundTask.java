@@ -5,12 +5,12 @@ import com.devsmart.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.util.concurrent.ExecutorService;
 
 public abstract class BackgroundTask implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(BackgroundTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BackgroundTask.class);
 
     public static void runBackgroundTask(BackgroundTask task, TaskQueue queue) {
         queue.execute(task);
@@ -66,7 +66,8 @@ public abstract class BackgroundTask implements Runnable {
                 onBackground();
             }
         } catch(Throwable e){
-            logger.error("BackgroundTask interrupted", e);
+            LOGGER.error("Unhandled exception while executing BackgroundTask", e);
+            throw new RuntimeException(e);
         } finally {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override

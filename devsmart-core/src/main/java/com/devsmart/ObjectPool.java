@@ -20,7 +20,10 @@ public class ObjectPool<T> {
         if (mFreeIndex < 0) {
             return mCreator.create();
         } else {
-            return (T) mObjects[mFreeIndex--];
+            T retval = (T) mObjects[mFreeIndex];
+            mObjects[mFreeIndex] = null;
+            mFreeIndex--;
+            return retval;
         }
     }
 

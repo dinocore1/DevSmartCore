@@ -1,9 +1,14 @@
 package com.devsmart;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DoubleArrayAllocator {
+
+    private static final Logger logger = LoggerFactory.getLogger(DoubleArrayAllocator.class);
 
     private final long mMaxSize;
     private long mSize = 0;
@@ -30,6 +35,7 @@ public class DoubleArrayAllocator {
                 retval = mPool.remove(index);
                 mSize -= retval.length;
             } else {
+                //logger.info("allocating array {}", size);
                 retval = new double[size];
             }
         }

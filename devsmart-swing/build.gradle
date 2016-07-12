@@ -42,6 +42,10 @@ uploadArchives {
             authentication(userName: sonatypeUsername, password: sonatypePassword)
         }
 
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
         pom.project {
             name 'Devsmart-swing'
             description 'A collection of utility functions for java swing'

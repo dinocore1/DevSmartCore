@@ -4,17 +4,19 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '24.0.2'
 
     defaultConfig {
         minSdkVersion 14
@@ -93,13 +95,6 @@ uploadArchives {
                 }
             }
         }
-
-        //repository(url: "file:///home/paul/mymaven")
-        //repository(url: "file://localhost/var/www/maven/")
-        //pom.groupId = project.group
-        //pom.artifactId = 'miniweb-android'
-        //pom.version = project.version
-        //pom.packaging = 'aar'
 
     }
 }

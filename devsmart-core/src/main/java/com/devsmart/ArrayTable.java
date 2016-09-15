@@ -1090,6 +1090,11 @@ public class ArrayTable {
                         i++;
                         return retval;
                     }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException("remove is not supported");
+                    }
                 };
             }
         };

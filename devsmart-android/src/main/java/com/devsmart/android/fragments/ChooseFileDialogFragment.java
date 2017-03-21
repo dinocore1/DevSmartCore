@@ -15,16 +15,22 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.devsmart.android.R;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.regex.Pattern;
 
 public class ChooseFileDialogFragment extends DialogFragment {
+
+
 
     public interface ChooseFileCallback {
         void onCancel();
@@ -32,24 +38,61 @@ public class ChooseFileDialogFragment extends DialogFragment {
     }
 
     private static final String ARG_ROOT = "root";
+    private static final String ARG_GOBELOW = "goBelow";
+    private static final String ARG_FILENAME_REGEX = "filenameRegex";
+    private static final String DEFAULT_FILENAME_REGEX = ".*";
+
+    public static class Builder {
+
+        private File mRootDir;
+        private boolean mGoBelow = false;
+        private ArrayList<String> mFilenameFilters = new ArrayList<String>();
+
+        public Builder() {
+            mRootDir = Environment.getExternalStorageDirectory();
+        }
+
+        public Builder rootDir(File dir) {
+            mRootDir = dir;
+            return this;
+        }
+
+        public Builder canGoBelowRoot(boolean goBelow) {
+            mGoBelow = goBelow;
+            return this;
+        }
+
+        public Builder addFilenameFilter(String regex) {
+            mFilenameFilters.add(regex);
+            return this;
+        }
+
+        public ChooseFileDialogFragment build() {
+            ChooseFileDialogFragment retval = new ChooseFileDialogFragment();
+            Bundle args = new Bundle();
+            args.putString(ARG_ROOT, mRootDir.getAbsolutePath());
+            args.putBoolean(ARG_GOBELOW, mGoBelow);
+            args.putStringArray(ARG_FILENAME_REGEX, mFilenameFilters.toArray(new String[mFilenameFilters.size()]));
+            retval.setArguments(args);
+            return retval;
+        }
+    }
 
 
     public static ChooseFileDialogFragment newInstance() {
-        final File root = Environment.getExternalStorageDirectory();
-        ChooseFileDialogFragment retval = new ChooseFileDialogFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_ROOT, root.getAbsolutePath());
-        retval.setArguments(args);
-        return retval;
+        return new Builder()
+                .addFilenameFilter(DEFAULT_FILENAME_REGEX)
+                .build();
     }
 
-    private boolean mCanGoBelow = false;
+    private boolean mCanGoBelow;
     private File mRootDir;
     private File mCurrentDir;
     private FrameLayout mFrameLayout;
     private ListView mListView;
     private File mSelectedFile;
     private ChooseFileCallback mCallback;
+    private ArrayList<Pattern> mFilenameRegex = new ArrayList<Pattern>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +102,10 @@ public class ChooseFileDialogFragment extends DialogFragment {
         mRootDir = new File(args.getString(ARG_ROOT));
         mCurrentDir = mRootDir;
 
+        mCanGoBelow = args.getBoolean(ARG_GOBELOW);
+        for(String regex : args.getStringArray(ARG_FILENAME_REGEX)){
+            mFilenameRegex.add(Pattern.compile(regex));
+        }
     }
 
 
@@ -100,7 +147,26 @@ public class ChooseFileDialogFragment extends DialogFragment {
 
         public DirListAdapter(File file) {
             mDir = file;
-            mFiles = file.listFiles();
+            load();
+        }
+
+        public void load() {
+            mFiles = mDir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    if(f.isDirectory()) {
+                        return true;
+                    }
+
+                    for(Pattern p : mFilenameRegex) {
+                        if(p.matcher(f.getName()).find()) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+
             if(mFiles == null) {
                 mFiles = new File[0];
             }
@@ -143,24 +209,31 @@ public class ChooseFileDialogFragment extends DialogFragment {
                 retval = LayoutInflater.from(getActivity()).inflate(R.layout.devsmart_filelistitem, viewGroup, false);
             }
 
-            TextView filenameText = (TextView)retval.findViewById(R.id.filename);
+            TextView filenameText = (TextView) retval.findViewById(R.id.filename);
+            ImageView icon = (ImageView) retval.findViewById(R.id.icon);
+
+            int imageResource = android.R.color.transparent;
 
             if(hasBack()) {
                 if (i == 0) {
                     filenameText.setText("..");
                     retval.setTag(new File(".."));
+
                 } else {
                     final File file = mFiles[i - 1];
+                    imageResource = file.isFile() ? R.drawable.ic_insert_drive_file_white_24dp : R.drawable.ic_folder_white_24dp;
                     retval.setTag(file);
                     filenameText.setText(file.getName());
 
                 }
             } else {
                 final File file = mFiles[i];
+                imageResource = file.isFile() ? R.drawable.ic_insert_drive_file_white_24dp : R.drawable.ic_folder_white_24dp;
                 retval.setTag(file);
                 filenameText.setText(file.getName());
-
             }
+
+            icon.setImageResource(imageResource);
 
 
             return retval;
@@ -298,11 +371,12 @@ public class ChooseFileDialogFragment extends DialogFragment {
     }
 
     void onSelectedClicked() {
-        if(mSelectedFile != null) {
-            if(mCallback != null){
+        if(mCallback != null) {
+            if(mSelectedFile != null) {
                 mCallback.onFileSelected(mSelectedFile);
+            } else {
+                mCallback.onCancel();
             }
-            dismiss();
         }
     }
 }

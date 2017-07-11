@@ -1011,38 +1011,47 @@ public class ArrayTable {
      */
     public void resort() {
         if (mComparator != null) {
-            quickSort(0, mRows - 1);
+            heapSort();
         }
     }
 
-    private void quickSort(final int low, final int hi) {
+    private void heapSort() {
+        int n = mRows - 1;
 
-        int i = low;
-        int j = hi;
-        final int pivotRow = low + (hi - low) / 2;
-
-        while (i <= j) {
-            while (mComparator.compare(this, i, pivotRow) < 0) {
-                i++;
-            }
-            while (mComparator.compare(this, j, pivotRow) > 0) {
-                j--;
-            }
-            if (i <= j) {
-                swap(i, j);
-                i++;
-                j--;
-            }
+        heapify();
+        for(int i=n;i>0;i--){
+            swap(0, i);
+            n = n - 1;
+            maxheap(0, n);
         }
-
-        if (low < j) {
-            quickSort(low, j);
-        }
-        if (i < hi) {
-            quickSort(i, hi);
-        }
-
     }
+
+    private void heapify() {
+        int n = mRows - 1;
+        for(int i=n/2;i>=0;i--) {
+            maxheap(i, n);
+        }
+    }
+
+    private void maxheap(int i, int n) {
+
+        int left = 2*i;
+        int right = 2*i + 1;
+        int max = i;
+        if(left <= n && mComparator.compare(this, left, i) > 0) {
+            max = left;
+        }
+
+        if(right <=n && mComparator.compare(this, right, max) > 0) {
+            max = right;
+        }
+
+        if(max != i) {
+            swap(i, max);
+            maxheap(max, n);
+        }
+    }
+
 
     @Override
     public String toString() {

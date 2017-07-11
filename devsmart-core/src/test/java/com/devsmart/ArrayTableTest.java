@@ -2,9 +2,11 @@ package com.devsmart;
 
 
 import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -150,6 +152,26 @@ public class ArrayTableTest {
         assertEquals("a", table.getObject(0, 2));
         assertEquals("c", table.getObject(1, 2));
         assertEquals("e", table.getObject(2, 2));
+    }
+
+    @Test
+    public void sortTest2() {
+        ArrayTable table = ArrayTable.createWithColumnTypes(int.class);
+
+        for(int i=0;i<30;i++) {
+            table.addRow(i);
+        }
+        table.addRow(3);
+        table.addRow(5);
+
+        table.shuffle(new Random(1));
+
+        table.sort(new ArrayTable.ChainedRowComparator.Builder(table)
+                .byColumnAsc(0)
+                .build());
+
+        int[] columnArray = (int[]) table.getColumn(0);
+        assertTrue(Ordering.natural().isOrdered(Ints.asList(columnArray)));
     }
 
     @Test

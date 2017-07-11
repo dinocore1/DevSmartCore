@@ -1,7 +1,7 @@
 allprojects {
 
     group = 'com.dev-smart'
-    version = '0.1.8'
+    version = '0.1.9'
     description = 'Collection of Java utilities'
 
     repositories {

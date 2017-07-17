@@ -15,7 +15,7 @@ public class IOUtils {
         void onProgress(int bytesWritten);
     }
 
-    public static final int DEFAULT_BUFFER_SIZE = 4096;
+    public static final int DEFAULT_BUFFER_SIZE = 32768;
 
     public static void pump(InputStream in, OutputStream out) throws IOException {
         pump(in, out, DEFAULT_BUFFER_SIZE, null, true, true);

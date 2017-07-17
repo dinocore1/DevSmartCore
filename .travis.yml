@@ -1,0 +1,15 @@
+language: android
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools
+
+    # The BuildTools version used by your project
+    - build-tools-24.0.2
+    - android-19
+
+  licenses:
+    - 'android-sdk-license-.+'
+
+script: ./gradlew test -PsonatypeUsername="${SONATYPE_USERNAME}" -PsonatypePassword="${SONATYPE_PASSWORD}"

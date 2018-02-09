@@ -1,9 +1,10 @@
 apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
+apply plugin: 'com.bmuschko.nexus'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+compileJava {
+    targetCompatibility = 1.6
+    sourceCompatibility = 1.6
+}
 
 
 dependencies {
@@ -14,70 +15,31 @@ dependencies {
 
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
+modifyPom {
+    project {
+        name 'Devsmart-swing'
+        description 'A collection of utility functions for java swing'
+        url 'http://github.com/dinocore1/DevSmartCore'
 
-task sourceJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar
-    archives sourceJar
-}
-
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories.mavenDeployer {
-
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        scm {
+            url 'scm:git@github.com:dinocore1/DevSmartCore.git'
+            connection 'scm:git@github.com:dinocore1/DevSmartCore.git'
+            developerConnection 'scm:git@github.com:dinocore1/DevSmartCore.git'
         }
 
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-            authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
-
-        pom.project {
-            name 'Devsmart-swing'
-            description 'A collection of utility functions for java swing'
-            url 'http://github.com/dinocore1/DevSmartCore'
-
-            scm {
-                url 'scm:git@github.com:dinocore1/DevSmartCore.git'
-                connection 'scm:git@github.com:dinocore1/DevSmartCore.git'
-                developerConnection 'scm:git@github.com:dinocore1/DevSmartCore.git'
-            }
-
-            licenses {
-                license {
-                    name 'MIT License'
-                    url 'https://github.com/dinocore1/DevSmartCore/blob/master/LICENSE.txt'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'psoucy'
-                    name 'Paul Soucy'
-                }
+        licenses {
+            license {
+                name 'MIT License'
+                url 'https://github.com/dinocore1/DevSmartCore/blob/master/LICENSE.txt'
+                distribution 'repo'
             }
         }
 
-        //repository(url: "file:///home/paul/mymaven")
-        //repository(url: "file://localhost/var/www/maven/")
-        //pom.groupId = project.group
-        //pom.artifactId = 'miniweb'
-        //pom.version = project.version
-
+        developers {
+            developer {
+                id 'psoucy'
+                name 'Paul Soucy'
+            }
+        }
     }
 }

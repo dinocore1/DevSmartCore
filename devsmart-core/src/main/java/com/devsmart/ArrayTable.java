@@ -117,6 +117,44 @@ public class ArrayTable {
         }
     }
 
+    public static class AscFloatRowComparator implements RowComparator {
+
+        private final int mColumn;
+
+        public AscFloatRowComparator(int column) {
+            mColumn = column;
+        }
+
+        @Override
+        public int compare(ArrayTable table, int rowa, int rowb) {
+            return Float.compare(table.getFloat(rowa, mColumn), table.getFloat(rowb, mColumn));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d ASC", mColumn);
+        }
+    }
+
+    public static class DescFloatRowComparator implements RowComparator {
+
+        private final int mColumn;
+
+        public DescFloatRowComparator(int column) {
+            mColumn = column;
+        }
+
+        @Override
+        public int compare(ArrayTable table, int rowa, int rowb) {
+            return Float.compare(table.getFloat(rowb, mColumn), table.getFloat(rowa, mColumn));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d DESC", mColumn);
+        }
+    }
+
     public static class AscDoubleRowComparator implements RowComparator {
 
         private final int mColumn;
@@ -204,6 +242,10 @@ public class ArrayTable {
             public Builder byColumnAsc(int column) {
                 if (mRefTable.mColumnTypes[column] == int.class) {
                     add(new AscIntRowComparator(column));
+                } else if(mRefTable.mColumnTypes[column] == float.class) {
+                    add(new AscFloatRowComparator(column));
+                } else if(mRefTable.mColumnTypes[column] == double.class){
+                    add(new AscDoubleRowComparator(column));
                 } else {
                     add(new ObjRowComparator(column, Ordering.natural()));
                 }
@@ -214,6 +256,10 @@ public class ArrayTable {
             public Builder byColumnDesc(int column) {
                 if (mRefTable.mColumnTypes[column] == int.class) {
                     add(new DescIntRowComparator(column));
+                } else if(mRefTable.mColumnTypes[column] == float.class) {
+                    add(new DescFloatRowComparator(column));
+                } else if(mRefTable.mColumnTypes[column] == double.class){
+                    add(new DescDoubleRowComparator(column));
                 } else {
                     add(new ObjRowComparator(column, Ordering.natural().reverse()));
                 }
@@ -790,51 +836,63 @@ public class ArrayTable {
     }
 
     public int getInt(int row, int column) {
-        return Array.getInt(mColumns[column], row);
+        return ((int[])mColumns[column])[row];
+        //return Array.getInt(mColumns[column], row);
     }
 
     public void setInt(int row, int column, int value) {
-        Array.setInt(mColumns[column], row, value);
+        ((int[])mColumns[column])[row] = value;
+        //Array.setInt(mColumns[column], row, value);
     }
 
     public long getLong(int row, int column) {
-        return Array.getLong(mColumns[column], row);
+        return ((long[])mColumns[column])[row];
+        //return Array.getLong(mColumns[column], row);
     }
 
     public void setLong(int row, int column, long value) {
-        Array.setLong(mColumns[column], row, value);
+        ((long[])mColumns[column])[row] = value;
+        //Array.setLong(mColumns[column], row, value);
     }
 
     public float getFloat(int row, int column) {
-        return Array.getFloat(mColumns[column], row);
+        return ((float[])mColumns[column])[row];
+        //return Array.getFloat(mColumns[column], row);
     }
 
     public void setFloat(int row, int column, float value) {
-        Array.setFloat(mColumns[column], row, value);
+        ((float[])mColumns[column])[row] = value;
+        //Array.setFloat(mColumns[column], row, value);
     }
 
     public double getDouble(int row, int column) {
-        return Array.getDouble(mColumns[column], row);
+        return ((double[])mColumns[column])[row];
+        //return Array.getDouble(mColumns[column], row);
     }
 
     public void setDouble(int row, int column, double value) {
-        Array.setDouble(mColumns[column], row, value);
+        ((double[])mColumns[column])[row] = value;
+        //Array.setDouble(mColumns[column], row, value);
     }
 
     public boolean getBoolean(int row, int column) {
-        return Array.getBoolean(mColumns[column], row);
+        return ((boolean[])mColumns[column])[row];
+        //return Array.getBoolean(mColumns[column], row);
     }
 
     public void setBoolean(int row, int column, boolean value) {
-        Array.setBoolean(mColumns[column], row, value);
+        ((boolean[])mColumns[column])[row] = value;
+        //Array.setBoolean(mColumns[column], row, value);
     }
 
     public <T> T getObject(int row, int column) {
-        return (T) Array.get(mColumns[column], row);
+        return (T) ((Object[])mColumns[column])[row];
+        //return (T) Array.get(mColumns[column], row);
     }
 
     public void setObject(int row, int column, Object value) {
-        Array.set(mColumns[column], row, value);
+        ((Object[])mColumns[column])[row] = value;
+        //Array.set(mColumns[column], row, value);
     }
 
     public int floor(int column, int key, int min, int max) {

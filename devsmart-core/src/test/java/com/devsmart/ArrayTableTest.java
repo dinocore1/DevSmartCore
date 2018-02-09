@@ -112,13 +112,14 @@ public class ArrayTableTest {
     public void testSort() {
         ArrayTable table = ArrayTable.createWithColumnsCopy(
                 new int[]{3, 1, 5},
+                new float[]{18.3f, 100.3f, 20.f},
                 new double[]{5.3, 8.3, 10.3},
                 new String[]{"e", "a", "c"}
         );
 
-        assertEquals("e", table.getObject(0, 2));
-        assertEquals("a", table.getObject(1, 2));
-        assertEquals("c", table.getObject(2, 2));
+        assertEquals("e", table.getObject(0, 3));
+        assertEquals("a", table.getObject(1, 3));
+        assertEquals("c", table.getObject(2, 3));
 
         table.sort(new ArrayTable.ChainedRowComparator.Builder(table)
                 .byColumnAsc(0)
@@ -129,29 +130,37 @@ public class ArrayTableTest {
         assertEquals(3, table.getInt(1, 0));
         assertEquals(5, table.getInt(2, 0));
 
-        assertEquals(8.3, table.getDouble(0, 1), 0.0000001);
-        assertEquals(5.3, table.getDouble(1, 1), 0.0000001);
-        assertEquals(10.3, table.getDouble(2, 1), 0.0000001);
+        assertEquals(8.3, table.getDouble(0, 2), 0.0000001);
+        assertEquals(5.3, table.getDouble(1, 2), 0.0000001);
+        assertEquals(10.3, table.getDouble(2, 2), 0.0000001);
 
         table.sort(new ArrayTable.ChainedRowComparator.Builder(table)
                 .byColumnAsc(1)
+                .build());
+
+        assertEquals("e", table.getObject(0, 3));
+        assertEquals("c", table.getObject(1, 3));
+        assertEquals("a", table.getObject(2, 3));
+
+        table.sort(new ArrayTable.ChainedRowComparator.Builder(table)
+                .byColumnAsc(2)
                 .build());
 
         assertEquals(3, table.getInt(0, 0));
         assertEquals(1, table.getInt(1, 0));
         assertEquals(5, table.getInt(2, 0));
 
-        assertEquals(5.3, table.getDouble(0, 1), 0.0000001);
-        assertEquals(8.3, table.getDouble(1, 1), 0.0000001);
-        assertEquals(10.3, table.getDouble(2, 1), 0.0000001);
+        assertEquals(5.3, table.getDouble(0, 2), 0.0000001);
+        assertEquals(8.3, table.getDouble(1, 2), 0.0000001);
+        assertEquals(10.3, table.getDouble(2, 2), 0.0000001);
 
         table.sort(new ArrayTable.ChainedRowComparator.Builder(table)
-                .byColumnAsc(2)
+                .byColumnAsc(3)
                 .build());
 
-        assertEquals("a", table.getObject(0, 2));
-        assertEquals("c", table.getObject(1, 2));
-        assertEquals("e", table.getObject(2, 2));
+        assertEquals("a", table.getObject(0, 3));
+        assertEquals("c", table.getObject(1, 3));
+        assertEquals("e", table.getObject(2, 3));
     }
 
     @Test

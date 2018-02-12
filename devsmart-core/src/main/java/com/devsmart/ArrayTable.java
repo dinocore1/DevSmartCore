@@ -1121,6 +1121,8 @@ public class ArrayTable {
             for (int j = 0; j < mColumnTypes.length; j++) {
                 if (mColumnTypes[j] == int.class) {
                     buf.append(String.format("%-6d ", getInt(i, j)));
+                } else if (mColumnTypes[j] == float.class) {
+                    buf.append(String.format("%-6.4g ", getFloat(i, j)));
                 } else if (mColumnTypes[j] == double.class) {
                     buf.append(String.format("%-6.4g ", getDouble(i, j)));
                 } else {

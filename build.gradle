@@ -1,7 +1,7 @@
 allprojects {
 
     group = 'com.dev-smart'
-    version = '0.1.11'
+    version = '0.1.12-SNAPSHOT'
     description = 'Collection of Java utilities'
 
     buildscript {

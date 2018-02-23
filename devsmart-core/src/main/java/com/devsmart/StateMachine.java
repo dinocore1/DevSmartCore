@@ -61,7 +61,7 @@ public class StateMachine<S extends Enum<?>, I extends Enum<?>> {
             }
             notifyStateChanged(oldState, mState, input, data);
         } else {
-            sLogger.warn("no possible transition from: {} with input: {}", mState, input);
+            sLogger.debug("no possible transition from: {} with input: {}", mState, input);
         }
     }
 
